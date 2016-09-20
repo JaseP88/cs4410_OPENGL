@@ -1,3 +1,10 @@
+/*
+Program that draws a Sierpinski triangle (TriForce) from
+3 coordinate points the User pick.  Event triggered by the
+left mouse button clicks. Drawing is made up of Dots that are
+littered by way of an algorithm.
+*/
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -20,11 +27,13 @@ int corner = 0;
 
 void drawDot (GLint x, GLint y) {
 
+	//draw the dots at the coordinates x and y
 	glBegin(GL_POINTS);
 		glVertex2i(x,y);
 	glEnd();
 }
 
+/* The mouse event function that collects the User coordinates */
 void mouseEv (int button, int state, GLint x, GLint y) {
 
 	if (button == GLUT_LEFT_BUTTON &&  state == GLUT_DOWN) {
@@ -34,6 +43,7 @@ void mouseEv (int button, int state, GLint x, GLint y) {
 	}
 }
 
+/* Drawing of the Sierpinski gasket */
 void sierpinski () {
 
 	glClear(GL_COLOR_BUFFER_BIT);

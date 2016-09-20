@@ -1,3 +1,8 @@
+/*
+Program that draws a checkerboard.  Consist of 8x8 squares
+with alternating colors that is randomized
+*/
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else

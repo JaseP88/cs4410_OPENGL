@@ -1,3 +1,12 @@
+/*
+Program parameterizes a figure of a house.  Parameterization
+stretches or shrinks the house accordingly to values that 
+can be set (length and width)
+
+Function paramHouse allows for adjustments in height, width
+and the rgb color range
+*/
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else

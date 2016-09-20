@@ -1,3 +1,14 @@
+/*
+This program allows the User to doodle and draw.
+Utilized polyLines and its edge coordinates to trace and
+display the User mouse movement.
+
+Coordinates are obtained by the mouse event such as
+mouse movement and mouse button clicks. Coordinates  
+are then stored in an array and a display function
+loops through the indices to connect the points.
+*/
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
