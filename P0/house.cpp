@@ -26,9 +26,10 @@ const int screenHeight = 800;
 
 void paramHouse (GLintPoint peak, GLint width, GLint height, float r, float g, float b) {
 	
-	//Shell
-	glClear(GL_COLOR_BUFFER_BIT);
+	//Shell of house
+	//glClear(GL_COLOR_BUFFER_BIT); do not clear here for multiple draws
 	glColor3f(r,g,b);
+
 	glBegin(GL_POLYGON);
 
 	glVertex2i(peak.x, peak.y); //peak point
@@ -43,7 +44,6 @@ void paramHouse (GLintPoint peak, GLint width, GLint height, float r, float g, f
 	glFlush();
 
 	//Door
-	//glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0,1.0,1.0);
 	glBegin(GL_POLYGON);
 
@@ -81,16 +81,28 @@ void paramHouse (GLintPoint peak, GLint width, GLint height, float r, float g, f
 
 }
 
-void house1 (void) {
-	GLintPoint p;
-	p.x = 200;
-	p.y = 200;
+void myDisplay (void) {
+	GLintPoint p1, p2, p3;
+	
+	p1.x = 200;
+	p1.y = 200;
 
-	paramHouse(p,100,150, 1, 0, 0); //red house
+	p2.x = 300;
+	p2.y = 300;
 
+	p3.x = 500;
+	p3.y = 500;
+
+
+	glClear(GL_COLOR_BUFFER_BIT); //clear buffer before draw
+
+	paramHouse(p1,100,150, 1, 0, 0); //red house
+	paramHouse(p2,100,150,0,0,1);  //blue house
+	paramHouse(p3, -100, -150, 0,1,0);
 }
 
 void myInit (void) {
+	//glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(1.0,1.0,1.0,0.0);
 
 	glMatrixMode(GL_PROJECTION);
@@ -106,7 +118,7 @@ int main (int argc, char *argv[]) {
 	glutInitWindowSize(screenWidth, screenHeight);
 	glutCreateWindow("Parameterized House");
 
-	glutDisplayFunc(house1);
+	glutDisplayFunc(myDisplay);
 
 	myInit();
 	glutMainLoop();
