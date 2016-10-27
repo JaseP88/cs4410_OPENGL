@@ -10,35 +10,109 @@
 
 enum {SPHERE, TEAPOT, JACK};
 enum {YES, NO};
+enum {FLAT, SMOOTH};
 enum {INITIAL, ROTATE, TRANSLATE, SCALE};
 enum {MAGENTA, GREEN, BLUE, YELLOW, CYAN, WRAPAROUND};
 
 float cam_theta = 45.0;
 float cam_phi = 45.0;
 
-
 int myShape = SPHERE;
+int myShade = SMOOTH;
 int myColor = MAGENTA;
 int SOLID = YES;
 int state = INITIAL;
+int transfomation = NO;
+
+double scale_factor = 1;
+
+double moveInX = 0;
+double moveInY = 0;
+double moveInZ = 0;
+
+double angleX = 0;
+double angleY = 0;
+double angleZ = 0;
 
 
-/*axis and its cone */
+/***************************** BUILDING OBJECTS **********************/
+
+/* axis and its cone */
 void axis(double length) {
  	
 	glPushMatrix();
 	glBegin(GL_LINES);
-        glVertex3d(0, 0, 0);	//origin
-        glVertex3d(0, 0, length); // along the z-axis
+        glVertex3d(0, 0, 0);		//origin
+        glVertex3d(0, 0, length); 	// along the z-axis
 	glEnd();
 
 	glTranslated(0, 0, length -0.2);	//translate the cone
-	glutSolidCone(0.04, 0.2, 12, 9);	//the cone
+	glutSolidCone(0.3, 0.5, 12, 9);	//the cone
 	glPopMatrix();
 }
 
+/* Using the axis func append them together to get the coordinate axis */
+void drawAxis(double length) {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glColor3d(0, 0, 1);
+        axis(length);
+    
+	glPushMatrix();
+        glRotated(90, 0 , 1.0, 0);
+        glColor3d(1, 0, 0);
+        axis(length);
+	glPopMatrix();
+
+	glPushMatrix();
+        glRotated(-90, 1, 0 , 0);
+        glColor3d(0,1,0);
+        axis(length);
+	glPopMatrix();
+
+	glFlush();
+}
+
+
+/************************* SOLID OBJECTS ***************************/
+/* SOLID TEAPOT */
+void drawSolidTeapot(double sc, double mx, double my, double mz, double ax, double ay, double az) {
+	
+	if (transfomation == YES) {
+		glPushMatrix();
+			glTranslated(mx,my,mz);
+			glScaled(sc,sc,sc);
+			glRotated(az,0,0,1);
+			glRotated(ay,0,1,0);
+			glRotated(ax,1,0,0);
+			glutSolidTeapot(1);
+		glPopMatrix();
+	}
+
+	else 
+		glutSolidTeapot(1);
+}
+
+/* SOLID SPHERE */
+void drawSolidSphere(double sc, double mx, double my, double mz, double ax, double ay, double az) {
+	
+	if (transfomation == YES) {
+		glPushMatrix();
+			glTranslated(mx,my,mz);
+			glScaled(sc,sc,sc);
+			glRotated(az,0,0,1);
+			glRotated(ay,0,1,0);
+			glRotated(ax,1,0,0);
+			glutSolidSphere(1,200,200);
+		glPopMatrix();
+	}
+
+	else 
+		glutSolidSphere(1,200,200);
+}
+
+
+/* Solid Jack Parts */
 void solidJackPart() {
-// draw one axis of the unit jack - a stretched sphere
 	glPushMatrix();
 	glScaled(0.2,0.2,1.0);
 	glutSolidSphere(1,15,15);
@@ -51,8 +125,8 @@ void solidJackPart() {
 	glPopMatrix();
 }
 
+/* Solid Jack */
 void solidJack() {
-// draw a unit jack out of spheroids
 	glPushMatrix();
 	solidJackPart();
 	glRotated(90.0, 0, 1, 0);
@@ -62,8 +136,85 @@ void solidJack() {
 	glPopMatrix();
 }
 
+void drawSolidJack(double sc, double mx, double my, double mz, double ax, double ay, double az) {
+	
+	if (transfomation == YES) {
+		glPushMatrix();
+			glTranslated(mx,my,mz);
+			glScaled(sc,sc,sc);
+			glRotated(az,0,0,1);
+			glRotated(ay,0,1,0);
+			glRotated(ax,1,0,0);
+			solidJack();
+		glPopMatrix();
+	}
+
+	else 
+		solidJack();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/********************* WIRED OBJECTS ***********************/
+/* WIRED TEAPOT */
+void drawWireTeapot(double sc, double mx, double my, double mz, double ax, double ay, double az) {
+	
+	if (transfomation == YES) {
+		glPushMatrix();
+			glTranslated(mx,my,mz);
+			glScaled(sc,sc,sc);
+			glRotated(az,0,0,1);
+			glRotated(ay,0,1,0);
+			glRotated(ax,1,0,0);
+			glutWireTeapot(1);
+		glPopMatrix();
+	}
+
+	else 
+		glutWireTeapot(1);
+}
+
+/* WIRED SPHERE */
+void drawWireSphere(double sc, double mx, double my, double mz, double ax, double ay, double az) {
+	
+	if (transfomation == YES) {
+		glPushMatrix();
+			glTranslated(mx,my,mz);
+			glScaled(sc,sc,sc);
+			glRotated(az,0,0,1);
+			glRotated(ay,0,1,0);
+			glRotated(ax,1,0,0);
+			glutWireSphere(1,200,200);
+		glPopMatrix();
+	}
+
+	else 
+		glutWireSphere(1,200,200);
+}
+
+/* WIRED JACK PART */
 void wireJackPart() {
-// redraw jack using wire spheres
 	glPushMatrix();
 	glScaled(0.2,0.2,1.0);
 	glutWireSphere(1,15,15);
@@ -76,8 +227,8 @@ void wireJackPart() {
 	glPopMatrix();
 }
 
+/* WIRED JACK */
 void wireJack() {
-// draw a unit jack out of spheroids
 	glPushMatrix();
 	wireJackPart();
 	glRotated(90.0, 0, 1, 0);
@@ -87,122 +238,105 @@ void wireJack() {
 	glPopMatrix();
 }
 
-
-void display(void) {
-
-	int r, g, b;
-
-	switch(myColor) {
-		case MAGENTA:
-			r = 1.0;
-			g = 0.0;
-			b = 1.0;
-			break;
-
-		case GREEN:
-			r = 0.0;
-			g = 1.0;
-			b = 0.0;
-			break;
-
-		case BLUE:
-			r = 0.0;
-			g = 0.0;
-			b = 1.0;
-			break;
-
-		case YELLOW:
-			r = 1.0;
-			g = 1.0;
-			b = 0.0;
-			break;
-
-		case CYAN:
-			r = 0.0;
-			g = 1.0;
-			b = 1.0;
-			break;
+/* DRAW WIRED JACK */
+void drawWireJack(double sc, double mx, double my, double mz, double ax, double ay, double az) {
+	
+	if (transfomation == YES) {
+		glPushMatrix();
+			glTranslated(mx,my,mz);
+			glScaled(sc,sc,sc);
+			glRotated(az,0,0,1);
+			glRotated(ay,0,1,0);
+			glRotated(ax,1,0,0);
+			wireJack();
+		glPopMatrix();
 	}
 
-	glMatrixMode(GL_MODELVIEW); // position and aim the camera
+	else 
+		wireJack();
+}
+
+
+
+
+
+
+/********************* OPENGL FUNCTIONS **********************/
+
+/* my display function */
+void display(void) {
+	int r, g, b;
+
+	/* determin the color */
+	switch(myColor) {
+		case MAGENTA:
+			r = 1.0; g = 0.0; b = 1.0; break;
+	
+		case GREEN:
+			r = 0.0; g = 1.0; b = 0.0; break;
+		
+		case BLUE:
+			r = 0.0; g = 0.0; b = 1.0; break;
+			
+		case YELLOW:
+			r = 1.0; g = 1.0; b = 0.0; break;
+			
+		case CYAN:
+			r = 0.0; g = 1.0; b = 1.0; break;
+	}
+
+	/* position and aim the camera */
+	glMatrixMode(GL_MODELVIEW); 
 	glLoadIdentity();
 	gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0); // Camera initially points to -z direction
 
-	glTranslatef(0.0, 0.0, -10.0);
+	glTranslatef(0.0, 0.0, -60.0);
 	glRotated(cam_phi, 1, 0, 0); 
 	glRotated(-cam_theta, 0, 1, 0); 
 
 	/*draw the axis*/
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glColor3d(0, 0, 1);
-        axis(2);
-    
-	glPushMatrix();
-        glRotated(90, 0 , 1.0, 0);
-        glColor3d(1, 0, 0);
-        axis(2);
-	glPopMatrix();
+	drawAxis(10);
+	
+	if (myShape == SPHERE && SOLID == YES) {
 
-	glPushMatrix();
-        glRotated(-90, 1, 0 , 0);
-        glColor3d(0,1,0);
-        axis(2);
-	glPopMatrix();
-
-	glFlush();
-
-	if (state == INITIAL) {
-		if (myShape == SPHERE && SOLID == YES) {
-			glColor3d(r,g,b);
-			glutSolidSphere(.45, 200, 200);
-			glFlush();
-		}
-
-		else if (myShape == SPHERE && SOLID == NO) {
-			glColor3d(r,g,b);
-			glutWireSphere(0.45, 10, 20);
-			glFlush();
-		}
-
-		else if (myShape == TEAPOT && SOLID == YES) {
-			glColor3d(r,g,b);
-			glutSolidTeapot(.4);
-			glFlush();
-		}
-
-		else if (myShape == TEAPOT && SOLID == NO) {
-			glColor3d(r,g,b);
-			glutWireTeapot(0.4);
-			glFlush();
-		}
-
-		else if (myShape == JACK && SOLID == YES) {
-			glColor3d(r,g,b);
-			solidJack();
-			glFlush();
-		}
-
-		else if (myShape == JACK && SOLID == NO) {
-			glColor3d(r,g,b);
-			wireJack();
-			glFlush();
-		}
+		if ()
+		glColor3d(r,g,b);
+		drawSolidSphere(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
+		glFlush();
 	}
 
-	else { //the state is not INITAL it is in ROTATE/TRANS/ OR SCALE
-
-		if (state == ROTATE && myShape == SPHERE) {
-			glColor3d(r,g,b);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glPushMatrix();
-
-
-		}
-
-
+	else if (myShape == SPHERE && SOLID == NO) {
+		glColor3d(r,g,b);
+		drawWireSphere(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
+		glFlush();
 	}
 
+	else if (myShape == TEAPOT && SOLID == YES) {
+		glColor3d(r,g,b);
+		drawSolidTeapot(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
+		glFlush();
+			
+	}
+
+	else if (myShape == TEAPOT && SOLID == NO) {
+		glColor3d(r,g,b);
+		drawWireTeapot(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
+		glFlush();
+	}
+
+	else if (myShape == JACK && SOLID == YES) {
+		glColor3d(r,g,b);
+		drawSolidJack(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
+		glFlush();
+	}
+
+	else if (myShape == JACK && SOLID == NO) {
+		glColor3d(r,g,b);
+		drawWireJack(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
+		glFlush();
+	}
+	
+	glutSwapBuffers();
 }
 
 
@@ -214,32 +348,42 @@ void myKeyboard(unsigned char Key, int mouseX, int mouseY) {
 		case '1': 
 			myShape = SPHERE; 
 			display();
-			glutSwapBuffers();
 			break;
 		
 		case '2': 
 			myShape = TEAPOT;
 			display();
-			glutSwapBuffers();
 			break;
 
 		case '3':
 			myShape = JACK;
 			display();
-			glutSwapBuffers();
 			break;
+
+
+		/* Initially: myShade = SMOOTH / SOLID = YES
+		   oder: SMOOTH -> FLAT -> WIRE -> SMOOTH -> ..... */
 
 		case 'w':
 			if (SOLID == YES) {
-				SOLID = NO;
+				if (myShade == SMOOTH) {	//display Smooth shading
+					glShadeModel(GL_SMOOTH);
+					display();
+					myShade = FLAT;	//update shading after display
+					break;
+				}
+
+				else if (myShade == FLAT) {
+					glShadeModel(GL_FLAT);
+					display();
+					SOLID = NO;
+					break;
+				}
+			
+			else {			
 				display();
-				glutSwapBuffers();
-				break;
-			}
-			else {
 				SOLID = YES;
-				display();
-				glutSwapBuffers();
+				myShade = SMOOTH;
 				break;
 			}
 
@@ -249,99 +393,133 @@ void myKeyboard(unsigned char Key, int mouseX, int mouseY) {
 			if (myColor == WRAPAROUND) {
                 myColor = MAGENTA;
                 display();
-				glutSwapBuffers();
             }
 
             else {
 				display();
-				glutSwapBuffers();
 			}
 			break;
 
 		case 't':
+			transfomation = YES;
 			state = TRANSLATE;
 			break;
-		case 'r':
+		case 's':
+			transfomation = YES;
 			state = SCALE;
 			break;
-		case 's':
+		case 'r':
+			transfomation = YES;
 			state = ROTATE;
 			break;
 
-		
-
 		case 'x':
-			if (state == TRANSLATE) {
-
+			if (state == SCALE) {
+				scale_factor+=0.2;
+				display();
+				break;
 			}
+			
+			else if (state == TRANSLATE) {
+				moveInX+=0.5;
+				display();
+				break;
+			}
+
 			else if (state == ROTATE) {
-
+				angleX+=5;
+				display();
+				break;
 			}
-			else if (state == SCALE) {
-
-			}
-
-			else
-				printf("in initial state\n");
-
-			break;
+			
 
 
 		case 'X':
-			if (state == TRANSLATE) {
-
-			}
-			
-			else if (state == SCALE) {
-
+			if (state == SCALE) {
+				scale_factor-=0.2;
+				display();
+				break;
 			}
 
-			else
-				printf("in initial state\n");
+			else if (state == TRANSLATE) {
+				moveInX-=0.5;
+				display();
+				break;
+			}
 
-			break;
+			else if (state == ROTATE) {
+				angleX-=5;
+				display();
+				break;
+			}
 
 		case 'y':
 			if (state == TRANSLATE) {
-
+				moveInY+=0.5;
+				display();
+				break;
 			}
+
 			else if (state == ROTATE) {
-
+				angleY+=5;
+				display();
+				break;
 			}
-			else
-				printf("in initial state\n");
 
-			break;
 		case 'Y':
 			if (state == TRANSLATE) {
-
+				moveInY-=0.5;
+				display();
+				break;
 			}
-			else
-				printf("in initial state\n");
 
-			break;
+			else if (state == ROTATE) {
+				angleY-=5;
+				display();
+				break;
+			}
+			
 
 		case 'z':
 			if (state == TRANSLATE) {
-
+				moveInZ+=0.5;
+				display();
+				break;
 			}
+
 			else if (state == ROTATE) {
-
+				angleZ+=5;
+				display();
+				break;
 			}
-			else
-				printf("in initial state\n");
-
-			break;
+		
 		case 'Z':
 			if (state == TRANSLATE) {
-
+				moveInZ-=0.5;
+				display();
+				break;
 			}
-			else
-				printf("in initial state\n");
 
-			break;
-
+			else if (state == ROTATE) {
+				angleZ-=5;
+				display();
+				break;
+			}
+			
 		case 'd':
+			/* resets */
+			state = INITIAL;
+			transfomation = NO;
+			angleX = 0;
+			angleY = 0;
+			angleZ = 0;
+			moveInX = 0;
+			moveInY = 0;
+			moveInZ = 0;
+			scale_factor = 1;
+			cam_theta = 45.0;
+			cam_phi = 45.0;
+			display();
 			break;	
 	}
 			
@@ -354,27 +532,21 @@ void mySpecialKeyboard(int Key, int mouseX, int mouseY) {
 		case GLUT_KEY_RIGHT: // increase theta
 			cam_theta += 2;
 			display();
-			glutSwapBuffers();
 			break;
 		case GLUT_KEY_LEFT: // increase theta
 			cam_theta -= 2;
 			display();
-			glutSwapBuffers();
 			break;
 		case GLUT_KEY_UP: // increase phi
 			cam_phi += 2;
 			display();
-			glutSwapBuffers();
 			break;
 		case GLUT_KEY_DOWN: // increase phi
 			cam_phi -= 2;
 			display();
-			glutSwapBuffers();
 			break;
 	}
 }
-
-
 
 void Init() {
 
@@ -405,16 +577,13 @@ int main (int argc, char *argv[]) {
 	glutCreateWindow("HW2");
 
     Init();
-    //glutReshapeFunc(Reshape);
+   
 	glutDisplayFunc(display);
-
 	glutKeyboardFunc(myKeyboard);
-
-
 	glutSpecialFunc(mySpecialKeyboard);
 
+	glShadeModel(GL_SMOOTH);
 
-	//glClearColor(0.60, 0.75, 0.65, 0.0);
 	glViewport(0, 0, 640, 480);
 
 	glutMainLoop();
