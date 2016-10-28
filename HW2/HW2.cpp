@@ -6,9 +6,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "mesh.h"
 
 
-enum {SPHERE, TEAPOT, JACK};
+enum {SPHERE, TEAPOT, JACK, AIRPLANE};
 enum {YES, NO};
 enum {FLAT, SMOOTH};
 enum {INITIAL, ROTATE, TRANSLATE, SCALE};
@@ -34,7 +35,7 @@ double angleX = 0;
 double angleY = 0;
 double angleZ = 0;
 
-
+int n;
 /***************************** BUILDING OBJECTS **********************/
 
 /* axis and its cone */
@@ -102,12 +103,12 @@ void drawSolidSphere(double sc, double mx, double my, double mz, double ax, doub
 			glRotated(az,0,0,1);
 			glRotated(ay,0,1,0);
 			glRotated(ax,1,0,0);
-			glutSolidSphere(1,200,200);
+			glutSolidSphere(1,20,100);
 		glPopMatrix();
 	}
 
 	else 
-		glutSolidSphere(1,200,200);
+		glutSolidSphere(1,20,100);
 }
 
 
@@ -153,27 +154,183 @@ void drawSolidJack(double sc, double mx, double my, double mz, double ax, double
 		solidJack();
 }
 
+/* SOLID AIRPLANE PARTS */
+void drawSolidBody() {
+	glPushMatrix();
+		glScaled(0.6,0.4,4);
+		glutSolidSphere(1, 50, 50);
+	glPopMatrix();
+}
+
+void drawSolidWingA() {
+	glPushMatrix();
+		glScaled(9,0.2,1.8);
+		glutSolidCube(1);
+	glPopMatrix();
+
+}
+
+void drawSolidWingB() {	//fin
+	glPushMatrix();
+		glScaled(0.9,0.02,1.2);
+		glutSolidCone(1.1,1.2,50,50);
+	glPopMatrix();
+}
+
+void drawSupportBeam() {
+	glPushMatrix();
+		glScaled(0.1,1.3,0.1);
+		glutSolidCube(1);
+	glPopMatrix();
+}
+
+void drawWheel() {
+	glPushMatrix();
+		glScaled(0.010,1.5,1.5);
+		glutSolidSphere(1,50,50);
+	glPopMatrix();
+}
+
+void drawSolidAirplane() {
+	
+	//the body
+	drawSolidBody();	
+
+	//the top wing
+	glPushMatrix();
+		glTranslated(0,1.3,2);
+		drawSolidWingA();
+	glPopMatrix();
+
+	//the bottom wing
+	glPushMatrix();
+		glTranslated(0,0,2);
+		drawSolidWingA();
+	glPopMatrix();
+
+	//the support beams between wings
+	glPushMatrix();
+		glTranslated(3.2,0.6,2.5);
+		drawSupportBeam();
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslated(-3.2,0.6,2.5);
+		drawSupportBeam();
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslated(3.2,0.6,1.5);
+		drawSupportBeam();
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslated(-3.2,0.6,1.5);
+		drawSupportBeam();
+	glPopMatrix();
 
 
+	//horizontal fin
+	glPushMatrix();
+		glTranslated(0,0.15,-4.5);
+		glScaled(0.8,1,1.5);
+		drawSolidWingB();
+	glPopMatrix();
+
+	//vertical fin
+	glPushMatrix();
+		glScaled(0.7,0.7,0.7);
+		glTranslated(0,1,-5.8);
+		glRotated(30,1,0,0);
+		glRotated(90,0,0,1);
+		drawSolidWingB();
+	glPopMatrix();
+
+	//wheel beam
+	glPushMatrix();	//the left beam
+		glTranslated(1.4,-0.6,2);
+		drawSupportBeam();
+	glPopMatrix();
+	
+	glPushMatrix();	//the right beam
+		glTranslated(-1.4,-0.6,2);
+		drawSupportBeam();
+	glPopMatrix();
+
+	//right wheel
+	glPushMatrix();
+		glTranslated(-1.5,-1.1,2);
+		glScaled(0.25,0.25,0.25);
+		drawWheel();
+	glPopMatrix();
+
+	//left wheel
+	glPushMatrix();
+		glTranslated(1.5,-1.1,2);
+		glScaled(0.25,0.25,0.25);
+		drawWheel();
+	glPopMatrix();
+
+	//smaller beam 
+	glPushMatrix();
+		glTranslated(0,-0.6,-1.7);
+		glScaled(1,0.5,1);
+		drawSupportBeam();
+	glPopMatrix();
+
+	//back wheel
+	glPushMatrix();
+		glTranslated(0,-0.8,-1.7);
+		glScaled(0.15,0.15,0.15);
+		drawWheel();
+	glPopMatrix();
+
+	//propeller
+	glPushMatrix();
+		glTranslated(0,0,3.5);
+		glScaled(0.8,1,0.8);
+		drawSupportBeam();
+    glPopMatrix();
+
+    glPushMatrix();
+		glTranslated(0,0,3.5);
+		glRotated(90,0,0,1);
+		glScaled(0.8,1,0.8);
+		drawSupportBeam();
+    glPopMatrix();
+
+    glPushMatrix();
+		glTranslated(0,0,3.5);
+		glRotated(45,0,0,1);
+		glScaled(0.8,1,0.8);
+		drawSupportBeam();
+    glPopMatrix();
 
 
+   glPushMatrix();
+		glTranslated(0,0,3.5);
+		glRotated(135,0,0,1);
+		glScaled(0.8,1,0.8);
+		drawSupportBeam();
+    glPopMatrix();
 
+}
 
+void mySolidAirplane(double sc, double mx, double my, double mz, double ax, double ay, double az) {
+	if (transfomation == YES) {
+		glPushMatrix();
+			glTranslated(mx,my,mz);
+			glScaled(sc,sc,sc);
+			glRotated(az,0,0,1);
+			glRotated(ay,0,1,0);
+			glRotated(ax,1,0,0);
+			drawSolidAirplane();
+		glPopMatrix();
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	else 
+		drawSolidAirplane();
+}
 
 
 /********************* WIRED OBJECTS ***********************/
@@ -205,12 +362,12 @@ void drawWireSphere(double sc, double mx, double my, double mz, double ax, doubl
 			glRotated(az,0,0,1);
 			glRotated(ay,0,1,0);
 			glRotated(ax,1,0,0);
-			glutWireSphere(1,200,200);
+			glutWireSphere(1,20,200);
 		glPopMatrix();
 	}
 
 	else 
-		glutWireSphere(1,200,200);
+		glutWireSphere(1,20,200);
 }
 
 /* WIRED JACK PART */
@@ -256,7 +413,183 @@ void drawWireJack(double sc, double mx, double my, double mz, double ax, double 
 		wireJack();
 }
 
+/* WIRE AIRPLANE PARTS */
+void drawWireBody() {
+	glPushMatrix();
+		glScaled(0.6,0.4,4);
+		glutWireSphere(1, 50, 50);
+	glPopMatrix();
+}
 
+void drawWireWingA() {
+	glPushMatrix();
+		glScaled(9,0.2,1.8);
+		glutWireCube(1);
+	glPopMatrix();
+
+}
+
+void drawWireWingB() {	//fin
+	glPushMatrix();
+		glScaled(0.9,0.02,1.2);
+		glutWireCone(1.1,1.2,50,50);
+	glPopMatrix();
+}
+
+void drawWireSupportBeam() {
+	glPushMatrix();
+		glScaled(0.1,1.3,0.1);
+		glutWireCube(1);
+	glPopMatrix();
+}
+
+void drawWireWheel() {
+	glPushMatrix();
+		glScaled(0.010,1.5,1.5);
+		glutWireSphere(1,50,50);
+	glPopMatrix();
+}
+
+void drawWireAirplane() {
+	
+	//the body
+	drawWireBody();	
+
+	//the top wing
+	glPushMatrix();
+		glTranslated(0,1.3,2);
+		drawWireWingA();
+	glPopMatrix();
+
+	//the bottom wing
+	glPushMatrix();
+		glTranslated(0,0,2);
+		drawWireWingA();
+	glPopMatrix();
+
+	//the support beams between wings
+	glPushMatrix();
+		glTranslated(3.2,0.6,2.5);
+		drawWireSupportBeam();
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslated(-3.2,0.6,2.5);
+		drawWireSupportBeam();
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslated(3.2,0.6,1.5);
+		drawWireSupportBeam();
+	glPopMatrix();
+
+	glPushMatrix();
+		glTranslated(-3.2,0.6,1.5);
+		drawWireSupportBeam();
+	glPopMatrix();
+
+
+	//horizontal fin
+	glPushMatrix();
+		glTranslated(0,0.15,-4.5);
+		glScaled(0.8,1,1.5);
+		drawWireWingB();
+	glPopMatrix();
+
+	//vertical fin
+	glPushMatrix();
+		glScaled(0.7,0.7,0.7);
+		glTranslated(0,1,-5.8);
+		glRotated(30,1,0,0);
+		glRotated(90,0,0,1);
+		drawWireWingB();
+	glPopMatrix();
+
+	//wheel beam
+	glPushMatrix();	//the left beam
+		glTranslated(1.4,-0.6,2);
+		drawWireSupportBeam();
+	glPopMatrix();
+	
+	glPushMatrix();	//the right beam
+		glTranslated(-1.4,-0.6,2);
+		drawWireSupportBeam();
+	glPopMatrix();
+
+	//right wheel
+	glPushMatrix();
+		glTranslated(-1.5,-1.1,2);
+		glScaled(0.25,0.25,0.25);
+		drawWireWheel();
+	glPopMatrix();
+
+	//left wheel
+	glPushMatrix();
+		glTranslated(1.5,-1.1,2);
+		glScaled(0.25,0.25,0.25);
+		drawWireWheel();
+	glPopMatrix();
+
+	//smaller beam 
+	glPushMatrix();
+		glTranslated(0,-0.6,-1.7);
+		glScaled(1,0.5,1);
+		drawWireSupportBeam();
+	glPopMatrix();
+
+	//back wheel
+	glPushMatrix();
+		glTranslated(0,-0.8,-1.7);
+		glScaled(0.15,0.15,0.15);
+		drawWireWheel();
+	glPopMatrix();
+
+	//propeller
+	glPushMatrix();
+		glTranslated(0,0,3.5);
+		glScaled(0.8,1,0.8);
+		drawWireSupportBeam();
+    glPopMatrix();
+
+    glPushMatrix();
+		glTranslated(0,0,3.5);
+		glRotated(90,0,0,1);
+		glScaled(0.8,1,0.8);
+		drawWireSupportBeam();
+    glPopMatrix();
+
+    glPushMatrix();
+		glTranslated(0,0,3.5);
+		glRotated(45,0,0,1);
+		glScaled(0.8,1,0.8);
+		drawWireSupportBeam();
+    glPopMatrix();
+
+
+   glPushMatrix();
+		glTranslated(0,0,3.5);
+		glRotated(135,0,0,1);
+		glScaled(0.8,1,0.8);
+		drawWireSupportBeam();
+    glPopMatrix();
+
+}
+
+void myWireAirplane(double sc, double mx, double my, double mz, double ax, double ay, double az) {
+	if (transfomation == YES) {
+		glPushMatrix();
+			glTranslated(mx,my,mz);
+			glScaled(sc,sc,sc);
+			glRotated(az,0,0,1);
+			glRotated(ay,0,1,0);
+			glRotated(ax,1,0,0);
+			drawWireAirplane();
+		glPopMatrix();
+	}
+
+	else 
+		drawWireAirplane();
+}
 
 
 
@@ -298,7 +631,6 @@ void display(void) {
 	drawAxis(10);
 	
 	if (myShape == SPHERE && SOLID == YES) {
-
 		GLfloat mat_diffuse[] = { (GLfloat)r, (GLfloat)g, (GLfloat)b, 0 }; 
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 		drawSolidSphere(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
@@ -340,6 +672,21 @@ void display(void) {
 		drawWireJack(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
 		glFlush();
 	}
+
+	else if (myShape == AIRPLANE && SOLID == YES) {
+
+		GLfloat mat_diffuse[] = { (GLfloat)r, (GLfloat)g, (GLfloat)b, 0 }; 
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+		mySolidAirplane(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
+		glFlush();
+	}
+
+	else if (myShape == AIRPLANE && SOLID == NO) {
+		GLfloat mat_diffuse[] = { (GLfloat)r, (GLfloat)g, (GLfloat)b, 0 }; 
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+		myWireAirplane(scale_factor, moveInX, moveInY, moveInZ, angleX, angleY, angleZ);
+		glFlush();
+	}
 	
 	glutSwapBuffers();
 }
@@ -352,6 +699,8 @@ void myKeyboard(unsigned char Key, int mouseX, int mouseY) {
 	switch(Key) {
 		case '1': 
 			myShape = SPHERE; 
+			n = ret();
+			printf("n is %d",n);
 			display();
 			break;
 		
@@ -365,10 +714,15 @@ void myKeyboard(unsigned char Key, int mouseX, int mouseY) {
 			display();
 			break;
 
+		case '4':
+			myShape = AIRPLANE;
+			display();
+			break;
+
 
 		/* Initially: myShade = SMOOTH / SOLID = YES
 		   oder: SMOOTH -> FLAT -> WIRE -> SMOOTH -> ..... */
-
+		/* buggy */
 		case 'w':
 			if (SOLID == YES) {
 				if (myShade == SMOOTH) {	//display Smooth shading
@@ -443,6 +797,10 @@ void myKeyboard(unsigned char Key, int mouseX, int mouseY) {
 		case 'X':
 			if (state == SCALE) {
 				scale_factor-=0.2;
+				
+				if (scale_factor < 0)
+					scale_factor = 0;
+
 				display();
 				break;
 			}
@@ -586,17 +944,10 @@ void Init() {
 	glMatrixMode(GL_PROJECTION); // set the view volume shape
 	glLoadIdentity();
 	
-	// Parallel projection
-	//int factor = 2;
-	//glOrtho(-factor * 64/48.0, factor * 64/48.0, -factor, factor, 0.1, 1000);
-	// Pespective projection
-	//gluPerspective(10, 64/48.0, 0.1, 1000);
 	gluPerspective(20, 64/48., 0.1, 1000);
 
 	glEnable(GL_DEPTH_TEST);
-    //glDepthFunc(GL_MORE);
-	
-    //glFrontFace(GL_CW);
+  
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_AUTO_NORMAL);
@@ -619,7 +970,8 @@ int main (int argc, char *argv[]) {
 	glutSpecialFunc(mySpecialKeyboard);
 	glEnable(GL_LIGHTING); // enable the light source
 	glEnable(GL_LIGHT0); // use this specific light
-	//glShadeModel(GL_FLAT); // shading method
+	
+
 	glShadeModel(GL_SMOOTH); // shading method
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
