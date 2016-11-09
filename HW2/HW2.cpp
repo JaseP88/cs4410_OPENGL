@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "mesh.h"
 
 
 enum {SPHERE, TEAPOT, JACK, AIRPLANE};
@@ -35,7 +34,6 @@ double angleX = 0;
 double angleY = 0;
 double angleZ = 0;
 
-int n;
 /***************************** BUILDING OBJECTS **********************/
 
 /* axis and its cone */
@@ -699,8 +697,6 @@ void myKeyboard(unsigned char Key, int mouseX, int mouseY) {
 	switch(Key) {
 		case '1': 
 			myShape = SPHERE; 
-			n = ret();
-			printf("n is %d",n);
 			display();
 			break;
 		
@@ -722,28 +718,28 @@ void myKeyboard(unsigned char Key, int mouseX, int mouseY) {
 
 		/* Initially: myShade = SMOOTH / SOLID = YES
 		   oder: SMOOTH -> FLAT -> WIRE -> SMOOTH -> ..... */
-		/* buggy */
 		case 'w':
 			if (SOLID == YES) {
+
 				if (myShade == SMOOTH) {	//display Smooth shading
+					myShade = FLAT;	//update shading after display
 					glShadeModel(GL_SMOOTH);
 					display();
-					myShade = FLAT;	//update shading after display
 					break;
 				}
 
 				else if (myShade == FLAT) {
+					SOLID = NO;
 					glShadeModel(GL_FLAT);
 					display();
-					SOLID = NO;
 					break;
 				}
 			}	
 			
 			else {			
-				display();
 				SOLID = YES;
 				myShade = SMOOTH;
+				display();
 				break;
 			}
 
